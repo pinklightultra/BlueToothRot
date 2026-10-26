@@ -1,0 +1,7 @@
+build/
+Binaries/
+*.sln
+*.vcxproj*
+*.user
+.DS_Store
+Thumbs.db
