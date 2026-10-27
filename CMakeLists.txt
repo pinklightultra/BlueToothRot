@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(BlueToothRot VERSION 1.0.0 LANGUAGES CXX)
+project(BlueToothRot VERSION 1.0.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,7 +14,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(JUCE)
 
 juce_add_plugin(BlueToothRot
-    COMPANY_NAME "Antigravity Audio"
+    COMPANY_NAME "AntigravityAudio"
+    BUNDLE_ID "com.AntigravityAudio.BlueToothRot"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
