@@ -129,7 +129,7 @@ namespace BlueToothDSP
                 {
                     case HeadphoneType::CheapEarbuds:
                     {
-                        // 1. Broken seal: variable high-pass cutoff (50Hz tightly sealed down to 220Hz completely loose)
+                        // 1. Broken seal: high-pass cutoff is 50 Hz when sealed and 230 Hz when loose
                         float hpFreq = 50.0f + (180.0f * (1.0f - sealOrDrive));
                         earbudHP[0].setHighpass(currentSampleRate, hpFreq, 0.707f);
                         earbudHP[1].setHighpass(currentSampleRate, hpFreq, 0.707f);
@@ -137,7 +137,7 @@ namespace BlueToothDSP
                         outL = earbudHP[0].process(inL);
                         outR = earbudHP[1].process(inR);
 
-                        // 2. 3.0 kHz ear-canal acoustic resonance peak
+                        // 2. 3.2 kHz ear-canal resonance peak (set in configureFilters)
                         outL = earbudPeak[0].process(outL);
                         outR = earbudPeak[1].process(outR);
 
@@ -173,11 +173,11 @@ namespace BlueToothDSP
                     {
                         // Bone conduction physics:
                         // Sound passes through the zygomatic arch and temporal bone directly to the cochlea.
-                        // 1. Severe low-end cutoff: human skull bone does not resonate sub-bass (< 140 Hz)
+                        // 1. Low-end cutoff: 150 Hz high-pass set in configureFilters
                         outL = boneHP[0].process(inL);
                         outR = boneHP[1].process(inR);
 
-                        // 2. High frequency absorption: skull bone acts as a steep low-pass filter above 4.5 kHz
+                        // 2. High-frequency rolloff: 4.8 kHz low-pass set in configureFilters
                         outL = boneLP[0].process(outL);
                         outR = boneLP[1].process(outR);
 
@@ -185,8 +185,7 @@ namespace BlueToothDSP
                         outL = bonePeak[0].process(outL);
                         outR = bonePeak[1].process(outR);
 
-                        // 4. Tactile transducer buzz: When bass frequencies (80Hz - 250Hz) are present,
-                        // the mechanical motor buzzes violently against the cheekbone skin.
+                        // 4. Tactile transducer buzz: a 220 Hz low-pass of the dry input, then a tanh
                         float buzzL = boneBuzzLP[0].process(inL);
                         float buzzR = boneBuzzLP[1].process(inR);
 
