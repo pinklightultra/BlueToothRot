@@ -13,20 +13,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
       - name: Install Test Dependencies
         run: |
-          pip install numpy scipy
+          python3 -m pip install -r requirements.txt
+
+      - name: Run the README quickstart
+        run: |
+          python3 scripts/test_bluetooth_dsp.py --output degraded.wav --distance 0.75 --codec sbc --headphone earbuds
+          python3 - <<'PY'
+          import os, wave
+          path = "degraded.wav"
+          with wave.open(path) as w:
+              assert w.getnchannels() == 2, w.getnchannels()
+              assert w.getsampwidth() == 2, w.getsampwidth()
+              assert w.getframerate() == 44100, w.getframerate()
+              assert w.getnframes() == 220500, w.getnframes()
+          size = os.path.getsize(path)
+          assert size == 882044, size
+          PY
 
       - name: Run DSP Tests
         run: |
-          python -m unittest discover tests
+          python3 -m unittest discover tests
 
   build-juce-plugin:
     name: Build JUCE Plugin (${{ matrix.os }})
@@ -38,7 +53,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Linux Dependencies
         if: runner.os == 'Linux'
@@ -61,16 +76,16 @@ jobs:
 
       - name: Upload Linux Artifacts
         if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: BlueToothRot-Linux
           path: build/BlueToothRot_artefacts/Release/
-          if-no-files-found: ignore
+          if-no-files-found: error
 
       - name: Upload Windows Artifacts
         if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: BlueToothRot-Windows
           path: build/BlueToothRot_artefacts/Release/
-          if-no-files-found: ignore
+          if-no-files-found: error

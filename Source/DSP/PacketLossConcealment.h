@@ -115,7 +115,7 @@ namespace BlueToothDSP
             {
                 case PLCMode::RobotFreeze:
                 {
-                    // Loop single fundamental pitch period with crossfading
+                    // Loop one detected period and fade it to silence across maxHoldMs
                     int period = pitchPeriod[ch];
                     int offset = freezePhase[ch] % period;
                     int readIdx = (head - offset + historyLength) % historyLength;
